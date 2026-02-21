@@ -1,12 +1,12 @@
-const CACHE_NAME = 'promptnota-v2';
+const CACHE_NAME = 'promptnota-v3';
 const ASSETS = [
   '/PWANota/',
   '/PWANota/index.html',
   '/PWANota/style.css',
   '/PWANota/app.js',
   '/PWANota/db.js',
-  '/PWANota/icons/icon-192.svg',
-  '/PWANota/icons/icon-512.svg'
+  '/PWANota/icons/icon-192.png',
+  '/PWANota/icons/icon-512.png'
 ];
 
 // Install: cache all assets
