@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <meta name="description" content="Gerencie seus prompts favoritos e envie para o Gemini com um toque." />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="PromptNota" />
+
+  <title>PromptNota</title>
+
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icons/icon-192.svg" sizes="192x192" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <defs>
+              <linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#818cf8" />
+                <stop offset="100%" stop-color="#c084fc" />
+              </linearGradient>
+            </defs>
+            <path d="M12 2L2 7l10 5 10-5-10-5z" fill="url(#lg1)" />
+            <path d="M2 17l10 5 10-5" stroke="url(#lg1)" stroke-width="2" stroke-linecap="round" />
+            <path d="M2 12l10 5 10-5" stroke="url(#lg1)" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </div>
+        <span class="logo-text">PromptNota</span>
+      </div>
+      <div class="header-subtitle">Seus prompts, sempre à mão</div>
+    </div>
+  </header>
+
+  <!-- Search Bar -->
+  <div class="search-bar-wrapper">
+    <div class="search-bar">
+      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8" />
+        <path d="M21 21l-4.35-4.35" />
+      </svg>
+      <input id="search-input" type="search" placeholder="Buscar prompts..." autocomplete="off" spellcheck="false"
+        aria-label="Buscar prompts" />
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content" id="main-content">
+
+    <!-- Empty State -->
+    <div class="empty-state hidden" id="empty-state">
+      <div class="empty-icon" aria-hidden="true">
+        <svg viewBox="0 0 80 80" fill="none">
+          <circle cx="40" cy="40" r="38" stroke="#818cf8" stroke-width="2" stroke-dasharray="6 4" opacity="0.4" />
+          <path d="M28 35h24M28 42h16" stroke="#818cf8" stroke-width="2.5" stroke-linecap="round" opacity="0.7" />
+          <path d="M40 24v4M40 52v4M24 40h-4M60 40h-4" stroke="#c084fc" stroke-width="2" stroke-linecap="round"
+            opacity="0.5" />
+        </svg>
+      </div>
+      <p class="empty-title">Nenhum prompt ainda</p>
+      <p class="empty-sub">Toque no <strong>+</strong> para adicionar seu primeiro prompt</p>
+    </div>
+
+    <!-- Card Grid -->
+    <div class="card-grid" id="card-grid" role="list" aria-label="Lista de prompts"></div>
+
+  </main>
+
+  <!-- FAB -->
+  <button class="fab" id="fab" aria-label="Adicionar novo prompt" title="Novo Prompt">
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+    </svg>
+  </button>
+
+  <!-- Add/Edit Modal -->
+  <div class="modal-overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 class="modal-title-text" id="modal-title">Novo Prompt</h2>
+        <button class="btn-icon-sm" id="btn-cancel" aria-label="Fechar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label for="input-title" class="field-label">Título <span class="optional">(opcional)</span></label>
+        <input id="input-title" type="text" class="field-input" placeholder="Ex: Resumir artigo" maxlength="80"
+          autocomplete="off" />
+        <label for="input-text" class="field-label">
+          Texto do Prompt <span class="required">*</span>
+        </label>
+        <textarea id="input-text" class="field-input field-textarea" placeholder="Digite o prompt aqui..." rows="6"
+          maxlength="8000" aria-required="true"></textarea>
+        <span class="char-count" id="char-count">0 caracteres</span>
+      </div>
+      <div class="modal-footer">
+        <p class="keyboard-hint">Ctrl+Enter para salvar</p>
+        <button class="btn-primary" id="btn-save">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M17 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" />
+          </svg>
+          Salvar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirm -->
+  <div class="modal-overlay" id="confirm-overlay" role="dialog" aria-modal="true">
+    <div class="modal-box confirm-box">
+      <div class="confirm-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+      </div>
+      <h2 class="confirm-title">Remover Prompt?</h2>
+      <p class="confirm-msg">Esta ação não pode ser desfeita.</p>
+      <div class="confirm-actions">
+        <button class="btn-ghost" id="btn-cancel-delete">Cancelar</button>
+        <button class="btn-danger" id="btn-confirm-delete">Remover</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+  <script src="/db.js"></script>
+  <script src="/app.js"></script>
+</body>
+
+</html>

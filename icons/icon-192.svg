@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="40" fill="#1a1a2e"/>
+  <!-- Stacked cards -->
+  <rect x="42" y="56" width="108" height="80" rx="12" fill="none" stroke="url(#g)" stroke-width="4" opacity="0.3" transform="rotate(-6 96 96)"/>
+  <rect x="42" y="56" width="108" height="80" rx="12" fill="none" stroke="url(#g)" stroke-width="4" opacity="0.6" transform="rotate(-2 96 96)"/>
+  <rect x="42" y="56" width="108" height="80" rx="12" fill="#1a1a2e" stroke="url(#g)" stroke-width="4"/>
+  <!-- Lines -->
+  <line x1="60" y1="78" x2="132" y2="78" stroke="#818cf8" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+  <line x1="60" y1="92" x2="112" y2="92" stroke="#818cf8" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
+  <line x1="60" y1="104" x2="98" y2="104" stroke="#818cf8" stroke-width="3" stroke-linecap="round" opacity="0.3"/>
+  <!-- Play button accent -->
+  <circle cx="134" cy="118" r="18" fill="url(#g)" opacity="0.9"/>
+  <polygon points="129,109 129,127 145,118" fill="#1a1a2e"/>
+</svg>
