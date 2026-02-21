@@ -4,7 +4,7 @@
 
 // Register Service Worker
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js').catch(console.error);
+    navigator.serviceWorker.register('/PWANota/service-worker.js').catch(console.error);
 }
 
 // ─── State ───────────────────────────────────────────────────────────────────
@@ -261,7 +261,7 @@ document.addEventListener('keydown', e => {
     const sharedText = params.get('text') || '';
     const sharedTitle = params.get('title') || '';
     if (sharedText || sharedTitle) {
-        history.replaceState({}, '', '/');
+        history.replaceState({}, '', '/PWANota/');
         inputTitle.value = sharedTitle;
         inputText.value = sharedText;
         updateCharCount();

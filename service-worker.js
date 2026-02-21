@@ -1,12 +1,12 @@
-const CACHE_NAME = 'promptnota-v1';
+const CACHE_NAME = 'promptnota-v2';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/app.js',
-  '/db.js',
-  '/icons/icon-192.svg',
-  '/icons/icon-512.svg'
+  '/PWANota/',
+  '/PWANota/index.html',
+  '/PWANota/style.css',
+  '/PWANota/app.js',
+  '/PWANota/db.js',
+  '/PWANota/icons/icon-192.svg',
+  '/PWANota/icons/icon-512.svg'
 ];
 
 // Install: cache all assets
@@ -31,7 +31,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(cached => {
-      return cached || fetch(event.request).catch(() => caches.match('/index.html'));
+      return cached || fetch(event.request).catch(() => caches.match('/PWANota/index.html'));
     })
   );
 });
