@@ -16,7 +16,6 @@ const emptyState = document.getElementById('empty-state');
 const fab = document.getElementById('fab');
 const modal = document.getElementById('modal');
 const modalTitle = document.getElementById('modal-title');
-const inputTitle = document.getElementById('input-title');
 const inputText = document.getElementById('input-text');
 const btnSave = document.getElementById('btn-save');
 const btnCancel = document.getElementById('btn-cancel');
@@ -33,7 +32,6 @@ async function renderCards(filter = '') {
     const prompts = await getAllPrompts();
     const filtered = filter
         ? prompts.filter(p =>
-            p.title.toLowerCase().includes(filter.toLowerCase()) ||
             p.text.toLowerCase().includes(filter.toLowerCase()))
         : prompts;
 
@@ -51,7 +49,6 @@ async function renderCards(filter = '') {
         card.dataset.id = p.id;
         card.innerHTML = `
       <div class="card-header">
-        <h3 class="card-title">${escapeHtml(p.title || 'Sem título')}</h3>
         <span class="card-date">${formatDate(p.createdAt)}</span>
       </div>
       <p class="card-text">${escapeHtml(p.text)}</p>
@@ -90,7 +87,7 @@ async function renderCards(filter = '') {
 
 // ─── Share (Web Share API) ────────────────────────────────────────────────────
 async function sharePrompt(p) {
-    const shareText = p.title ? `${p.title}\n\n${p.text}` : p.text;
+    const shareText = p.text;
 
     if (navigator.share) {
         try {
@@ -114,7 +111,7 @@ function fallbackShare(text) {
 
 // ─── Copy ─────────────────────────────────────────────────────────────────────
 async function copyPrompt(p) {
-    const text = p.title ? `${p.title}\n\n${p.text}` : p.text;
+    const text = p.text;
     copyToClipboard(text);
 }
 
@@ -139,21 +136,19 @@ function copyToClipboard(text, silent = false) {
 function openAddModal() {
     editingId = null;
     modalTitle.textContent = 'Novo Prompt';
-    inputTitle.value = '';
     inputText.value = '';
     updateCharCount();
     modal.classList.add('visible');
-    inputTitle.focus();
+    inputText.focus();
 }
 
 function openEditModal(p) {
     editingId = p.id;
     modalTitle.textContent = 'Editar Prompt';
-    inputTitle.value = p.title || '';
     inputText.value = p.text;
     updateCharCount();
     modal.classList.add('visible');
-    inputTitle.focus();
+    inputText.focus();
 }
 
 function closeModal() {
@@ -167,7 +162,7 @@ function updateCharCount() {
 
 // ─── Save ─────────────────────────────────────────────────────────────────────
 async function savePrompt() {
-    const title = inputTitle.value.trim();
+    const title = '';
     const text = inputText.value.trim();
 
     if (!text) {
@@ -179,10 +174,10 @@ async function savePrompt() {
     }
 
     if (editingId !== null) {
-        await updatePrompt(editingId, title, text);
+        await updatePrompt(editingId, '', text);
         showToast('Prompt atualizado!');
     } else {
-        await addPrompt(title, text);
+        await addPrompt('', text);
         showToast('Prompt salvo!');
     }
 
@@ -260,9 +255,8 @@ document.addEventListener('keydown', e => {
     const params = new URLSearchParams(location.search);
     const sharedText = params.get('text') || '';
     const sharedTitle = params.get('title') || '';
-    if (sharedText || sharedTitle) {
+    if (sharedText) {
         history.replaceState({}, '', '/PWANota/');
-        inputTitle.value = sharedTitle;
         inputText.value = sharedText;
         updateCharCount();
         modal.classList.add('visible');
