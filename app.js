@@ -16,6 +16,7 @@ const emptyState = document.getElementById('empty-state');
 const fab = document.getElementById('fab');
 const modal = document.getElementById('modal');
 const modalTitle = document.getElementById('modal-title');
+const inputTitle = document.getElementById('input-title');
 const inputText = document.getElementById('input-text');
 const btnSave = document.getElementById('btn-save');
 const btnCancel = document.getElementById('btn-cancel');
@@ -32,6 +33,7 @@ async function renderCards(filter = '') {
     const prompts = await getAllPrompts();
     const filtered = filter
         ? prompts.filter(p =>
+            (p.title && p.title.toLowerCase().includes(filter.toLowerCase())) ||
             p.text.toLowerCase().includes(filter.toLowerCase()))
         : prompts;
 
@@ -49,6 +51,7 @@ async function renderCards(filter = '') {
         card.dataset.id = p.id;
         card.innerHTML = `
       <div class="card-header">
+        ${p.title ? `<h3 class="card-title">${escapeHtml(p.title)}</h3>` : ''}
         <span class="card-date">${formatDate(p.createdAt)}</span>
       </div>
       <p class="card-text">${escapeHtml(p.text)}</p>
@@ -136,15 +139,17 @@ function copyToClipboard(text, silent = false) {
 function openAddModal() {
     editingId = null;
     modalTitle.textContent = 'Novo Prompt';
+    inputTitle.value = '';
     inputText.value = '';
     updateCharCount();
     modal.classList.add('visible');
-    inputText.focus();
+    inputTitle.focus();
 }
 
 function openEditModal(p) {
     editingId = p.id;
     modalTitle.textContent = 'Editar Prompt';
+    inputTitle.value = p.title || '';
     inputText.value = p.text;
     updateCharCount();
     modal.classList.add('visible');
@@ -162,7 +167,7 @@ function updateCharCount() {
 
 // ─── Save ─────────────────────────────────────────────────────────────────────
 async function savePrompt() {
-    const title = '';
+    const title = inputTitle.value.trim();
     const text = inputText.value.trim();
 
     if (!text) {
@@ -174,10 +179,10 @@ async function savePrompt() {
     }
 
     if (editingId !== null) {
-        await updatePrompt(editingId, '', text);
+        await updatePrompt(editingId, title, text);
         showToast('Prompt atualizado!');
     } else {
-        await addPrompt('', text);
+        await addPrompt(title, text);
         showToast('Prompt salvo!');
     }
 
