@@ -59,6 +59,13 @@
     </div>
   </div>
 
+  <!-- Tag Filter Bar -->
+  <div class="tag-filter-wrapper" id="tag-filter-wrapper">
+    <div class="tag-filter-bar" id="tag-filter-bar">
+      <!-- Dynamic tag chips rendered by JS -->
+    </div>
+  </div>
+
   <!-- Main Content -->
   <main class="main-content" id="main-content">
 
@@ -104,7 +111,8 @@
         <label for="input-title" class="field-label">
           Título <span class="optional">(Opcional)</span>
         </label>
-        <input type="text" id="input-title" class="field-input" placeholder="Dê um nome para este prompt..." maxlength="100" />
+        <input type="text" id="input-title" class="field-input" placeholder="Dê um nome para este prompt..."
+          maxlength="100" />
 
         <label for="input-text" class="field-label">
           Texto do Prompt <span class="required">*</span>
@@ -112,6 +120,11 @@
         <textarea id="input-text" class="field-input field-textarea" placeholder="Digite o prompt aqui..." rows="6"
           maxlength="8000" aria-required="true"></textarea>
         <span class="char-count" id="char-count">0 caracteres</span>
+
+        <label class="field-label" style="margin-top: 16px;">Tags <span class="optional">(Opcional)</span></label>
+        <div class="tag-selector" id="tag-selector">
+          <!-- Dynamic tag pills rendered by JS -->
+        </div>
       </div>
       <div class="modal-footer">
         <p class="keyboard-hint">Ctrl+Enter para salvar</p>
@@ -141,6 +154,42 @@
       <div class="confirm-actions">
         <button class="btn-ghost" id="btn-cancel-delete">Cancelar</button>
         <button class="btn-danger" id="btn-confirm-delete">Remover</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tag Manager Modal -->
+  <div class="modal-overlay" id="tag-manager-overlay" role="dialog" aria-modal="true"
+    aria-labelledby="tag-manager-title">
+    <div class="modal-box tag-manager-box">
+      <div class="modal-header">
+        <h2 class="modal-title-text" id="tag-manager-title">Gerenciar Tags</h2>
+        <button class="btn-icon-sm" id="btn-close-tag-manager" aria-label="Fechar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- New tag form -->
+        <div class="tag-form">
+          <input type="text" id="tag-name-input" class="field-input" placeholder="Nome da tag..." maxlength="30" />
+          <div class="color-picker" id="color-picker">
+            <!-- Color circles rendered by JS -->
+          </div>
+          <button class="btn-primary btn-sm" id="btn-save-tag">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+              <path d="M19 13H13v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+            </svg>
+            <span id="btn-save-tag-label">Criar Tag</span>
+          </button>
+        </div>
+
+        <!-- Existing tags list -->
+        <div class="tag-list" id="tag-list">
+          <!-- Dynamic tag items rendered by JS -->
+        </div>
       </div>
     </div>
   </div>
