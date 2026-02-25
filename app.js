@@ -44,6 +44,8 @@ const btnSaveTagLabel = document.getElementById('btn-save-tag-label');
 const btnCloseTagManager = document.getElementById('btn-close-tag-manager');
 
 // Backup DOM
+const backupOverlay = document.getElementById('backup-overlay');
+const btnCloseBackup = document.getElementById('btn-close-backup');
 const btnExportBackup = document.getElementById('btn-export-backup');
 const btnImportBackup = document.getElementById('btn-import-backup');
 const inputImportFile = document.getElementById('input-import-file');
@@ -193,6 +195,14 @@ function renderTagFilterBar() {
     manageBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
     manageBtn.addEventListener('click', openTagManager);
     tagFilterBar.appendChild(manageBtn);
+
+    // Backup button
+    const backupBtn = document.createElement('button');
+    backupBtn.className = 'tag-chip tag-manage-btn';
+    backupBtn.title = 'Backup e Dados';
+    backupBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+    backupBtn.addEventListener('click', openBackupModal);
+    tagFilterBar.appendChild(backupBtn);
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -380,6 +390,23 @@ function closeTagManager() {
     editingTagId = null;
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// Backup Modal
+// ═══════════════════════════════════════════════════════════════════════════
+
+function openBackupModal() {
+    backupOverlay.classList.add('visible');
+}
+
+function closeBackupModal() {
+    backupOverlay.classList.remove('visible');
+}
+
+btnCloseBackup.addEventListener('click', closeBackupModal);
+backupOverlay.addEventListener('click', e => {
+    if (e.target === backupOverlay) closeBackupModal();
+});
+
 function renderColorPicker() {
     colorPicker.innerHTML = '';
     TAG_COLORS.forEach(c => {
@@ -527,6 +554,7 @@ document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
         closeModal();
         closeTagManager();
+        closeBackupModal();
         confirmOverlay.classList.remove('visible');
     }
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && modal.classList.contains('visible')) {
@@ -586,7 +614,7 @@ async function handleImportBackup(e) {
                 renderTagFilterBar();
                 renderCards();
                 showToast('Dados restaurados com sucesso!');
-                closeTagManager();
+                closeBackupModal();
             }
         } catch (err) {
             console.error(err);
