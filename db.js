@@ -158,6 +158,52 @@ async function deleteTag(id) {
     });
 }
 
+// ═══════════════════════════════════════════════════════════════
+// BACKUP & RESTORE (v2)
+// ═══════════════════════════════════════════════════════════════
+
+async function exportAllData() {
+    const prompts = await getAllPrompts();
+    const tags = await getAllTags();
+    return {
+        version: 1,
+        exportedAt: Date.now(),
+        prompts,
+        tags
+    };
+}
+
+async function importAllData(data) {
+    if (!data.prompts || !data.tags) {
+        throw new Error('Formato de arquivo inválido.');
+    }
+
+    const db = await openDB();
+    const tx = db.transaction([STORE_PROMPTS, STORE_TAGS], 'readwrite');
+
+    // Clear existing
+    tx.objectStore(STORE_PROMPTS).clear();
+    tx.objectStore(STORE_TAGS).clear();
+
+    const promptStore = tx.objectStore(STORE_PROMPTS);
+    const tagStore = tx.objectStore(STORE_TAGS);
+
+    // Import tags
+    for (const tag of data.tags) {
+        tagStore.put(tag);
+    }
+
+    // Import prompts
+    for (const prompt of data.prompts) {
+        promptStore.put(prompt);
+    }
+
+    return new Promise((resolve, reject) => {
+        tx.oncomplete = () => resolve();
+        tx.onerror = e => reject(e.target.error);
+    });
+}
+
 /**
  * Remove references to a deleted tag from all prompts.
  * (Used internally by deleteTag)

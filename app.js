@@ -43,6 +43,11 @@ const btnSaveTag = document.getElementById('btn-save-tag');
 const btnSaveTagLabel = document.getElementById('btn-save-tag-label');
 const btnCloseTagManager = document.getElementById('btn-close-tag-manager');
 
+// Backup DOM
+const btnExportBackup = document.getElementById('btn-export-backup');
+const btnImportBackup = document.getElementById('btn-import-backup');
+const inputImportFile = document.getElementById('input-import-file');
+
 let pendingDeleteId = null;
 let selectedColor = TAG_COLORS[0].hex;
 
@@ -542,6 +547,60 @@ document.addEventListener('keydown', e => {
         modalTitle.textContent = 'Salvar Prompt Recebido';
     }
 })();
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Backup Logic
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function handleExportBackup() {
+    try {
+        const data = await exportAllData();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `ainote-backup-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('Backup exportado com sucesso!');
+    } catch (err) {
+        console.error(err);
+        showToast('Erro ao exportar backup.', 'error');
+    }
+}
+
+async function handleImportBackup(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+        try {
+            const data = JSON.parse(event.target.result);
+            
+            if (confirm('Atenção: Isso substituirá TODOS os seus dados atuais. Deseja continuar?')) {
+                await importAllData(data);
+                await refreshTags();
+                renderTagFilterBar();
+                renderCards();
+                showToast('Dados restaurados com sucesso!');
+                closeTagManager();
+            }
+        } catch (err) {
+            console.error(err);
+            showToast('Erro ao importar arquivo. Verifique o formato.', 'error');
+        } finally {
+            inputImportFile.value = ''; // Reset input
+        }
+    };
+    reader.readAsText(file);
+}
+
+btnExportBackup.addEventListener('click', handleExportBackup);
+btnImportBackup.addEventListener('click', () => inputImportFile.click());
+inputImportFile.addEventListener('change', handleImportBackup);
 
 // ─── Init ─────────────────────────────────────────────────────────────────
 (async function init() {

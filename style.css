@@ -1106,3 +1106,33 @@ body::after {
 .btn-tag-delete:hover {
   color: var(--danger);
 }
+
+/* ── Backup Section ───────────────────────────────────────────── */
+.backup-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.backup-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.backup-actions .btn-ghost {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: .8rem;
+  padding: 10px;
+}
+
+.backup-hint {
+  font-size: .7rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+  text-align: center;
+}
