@@ -1,4 +1,4 @@
-const CACHE_NAME = 'promptnota-v9';
+const CACHE_NAME = 'promptnota-v10';
 const ASSETS = [
   '/PWANota/',
   '/PWANota/index.html',
