@@ -59,10 +59,32 @@
     </div>
   </div>
 
-  <!-- Tag Filter Bar -->
-  <div class="tag-filter-wrapper" id="tag-filter-wrapper">
-    <div class="tag-filter-bar" id="tag-filter-bar">
-      <!-- Dynamic tag chips rendered by JS -->
+  <!-- Action Bar -->
+  <div class="action-bar-wrapper" id="action-bar-wrapper">
+    <div class="action-bar">
+      <button class="btn-filter" id="btn-filter">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+        </svg>
+        Filtrar <span id="filter-count" class="filter-badge hidden">0</span>
+      </button>
+
+      <div class="action-group">
+        <button class="btn-icon-action" id="btn-open-tags" title="Gerenciar Tags">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        </button>
+        <button class="btn-icon-action" id="btn-open-backup" title="Backup e Dados">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -154,6 +176,30 @@
       <div class="confirm-actions">
         <button class="btn-ghost" id="btn-cancel-delete">Cancelar</button>
         <button class="btn-danger" id="btn-confirm-delete">Remover</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Modal -->
+  <div class="modal-overlay" id="filter-overlay" role="dialog" aria-modal="true" aria-labelledby="filter-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h2 class="modal-title-text" id="filter-title">Filtrar por Tags</h2>
+        <button class="btn-icon-sm" id="btn-close-filter" aria-label="Fechar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="tag-selector" id="filter-tag-selector">
+          <!-- Dynamic tags rendered by JS -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-ghost" id="btn-clear-filters">Limpar</button>
+        <button class="btn-primary" id="btn-apply-filters">Aplicar</button>
       </div>
     </div>
   </div>

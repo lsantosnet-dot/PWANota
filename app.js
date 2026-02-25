@@ -11,7 +11,7 @@ if ('serviceWorker' in navigator) {
 let editingId = null;
 let editingTagId = null;
 let selectedTagIds = [];       // tags selected in the prompt modal
-let activeFilterTagId = null;  // tag filter active on the main view
+let activeFilterTagIds = [];   // tags selected in the filter modal
 let allTagsCache = [];         // in-memory cache refreshed on changes
 
 // ─── DOM References ──────────────────────────────────────────────────────────
@@ -31,9 +31,20 @@ const confirmOverlay = document.getElementById('confirm-overlay');
 const btnConfirmDel = document.getElementById('btn-confirm-delete');
 const btnCancelDel = document.getElementById('btn-cancel-delete');
 
+// Action Bar DOM
+const btnFilter = document.getElementById('btn-filter');
+const filterCountBadge = document.getElementById('filter-count');
+const btnOpenTags = document.getElementById('btn-open-tags');
+const btnOpenBackup = document.getElementById('btn-open-backup');
+
+// Filter Modal DOM
+const filterOverlay = document.getElementById('filter-overlay');
+const filterTagSelector = document.getElementById('filter-tag-selector');
+const btnCloseFilter = document.getElementById('btn-close-filter');
+const btnClearFilters = document.getElementById('btn-clear-filters');
+const btnApplyFilters = document.getElementById('btn-apply-filters');
+
 // Tag-specific DOM
-const tagFilterWrapper = document.getElementById('tag-filter-wrapper');
-const tagFilterBar = document.getElementById('tag-filter-bar');
 const tagSelector = document.getElementById('tag-selector');
 const tagManagerOverlay = document.getElementById('tag-manager-overlay');
 const tagNameInput = document.getElementById('tag-name-input');
@@ -81,9 +92,11 @@ async function renderCards(filter = '') {
             p.text.toLowerCase().includes(q));
     }
 
-    // Tag filter
-    if (activeFilterTagId !== null) {
-        filtered = filtered.filter(p => p.tags && p.tags.includes(activeFilterTagId));
+    // Tag filter (OR logic: show prompt if it has ANY of the active filter tags)
+    if (activeFilterTagIds.length > 0) {
+        filtered = filtered.filter(p =>
+            p.tags && p.tags.some(tid => activeFilterTagIds.includes(tid))
+        );
     }
 
     cardGrid.innerHTML = '';
@@ -151,59 +164,75 @@ async function renderCards(filter = '') {
     });
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
-// RENDER — Tag Filter Bar
-// ═══════════════════════════════════════════════════════════════════════════
+// ─── Action Bar & Filters ───────────────────────────────────────────────────
 
-function renderTagFilterBar() {
-    tagFilterBar.innerHTML = '';
+function updateActionBar() {
+    const count = activeFilterTagIds.length;
+    if (count > 0) {
+        filterCountBadge.textContent = count;
+        filterCountBadge.classList.remove('hidden');
+        btnFilter.classList.add('active');
+    } else {
+        filterCountBadge.classList.add('hidden');
+        btnFilter.classList.remove('active');
+    }
+}
+
+function openFilterModal() {
+    renderFilterTagSelector();
+    filterOverlay.classList.add('visible');
+}
+
+function closeFilterModal() {
+    filterOverlay.classList.remove('visible');
+}
+
+function renderFilterTagSelector() {
+    filterTagSelector.innerHTML = '';
 
     if (allTagsCache.length === 0) {
-        tagFilterWrapper.classList.add('hidden');
+        filterTagSelector.innerHTML = '<span class="tag-selector-empty">Nenhuma tag disponível para filtrar.</span>';
         return;
     }
-    tagFilterWrapper.classList.remove('hidden');
-
-    // "Todas" chip
-    const allChip = document.createElement('button');
-    allChip.className = `tag-chip ${activeFilterTagId === null ? 'active' : ''}`;
-    allChip.textContent = 'Todas';
-    allChip.addEventListener('click', () => {
-        activeFilterTagId = null;
-        renderTagFilterBar();
-        renderCards(searchInput.value);
-    });
-    tagFilterBar.appendChild(allChip);
 
     allTagsCache.forEach(tag => {
-        const chip = document.createElement('button');
-        chip.className = `tag-chip ${activeFilterTagId === tag.id ? 'active' : ''}`;
-        chip.style.setProperty('--tag-color', tag.color);
-        chip.innerHTML = `<span class="tag-chip-dot"></span>${escapeHtml(tag.name)}`;
-        chip.addEventListener('click', () => {
-            activeFilterTagId = activeFilterTagId === tag.id ? null : tag.id;
-            renderTagFilterBar();
-            renderCards(searchInput.value);
+        const pill = document.createElement('button');
+        pill.type = 'button';
+        const isSelected = activeFilterTagIds.includes(tag.id);
+        pill.className = `tag-pill-selectable ${isSelected ? 'selected' : ''}`;
+        pill.style.setProperty('--tag-color', tag.color);
+        pill.innerHTML = `<span class="tag-pill-dot"></span>${escapeHtml(tag.name)}`;
+        pill.addEventListener('click', () => {
+            if (activeFilterTagIds.includes(tag.id)) {
+                activeFilterTagIds = activeFilterTagIds.filter(id => id !== tag.id);
+            } else {
+                activeFilterTagIds.push(tag.id);
+            }
+            renderFilterTagSelector();
         });
-        tagFilterBar.appendChild(chip);
+        filterTagSelector.appendChild(pill);
     });
-
-    // Manage button
-    const manageBtn = document.createElement('button');
-    manageBtn.className = 'tag-chip tag-manage-btn';
-    manageBtn.title = 'Gerenciar Tags';
-    manageBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`;
-    manageBtn.addEventListener('click', openTagManager);
-    tagFilterBar.appendChild(manageBtn);
-
-    // Backup button
-    const backupBtn = document.createElement('button');
-    backupBtn.className = 'tag-chip tag-manage-btn';
-    backupBtn.title = 'Backup e Dados';
-    backupBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
-    backupBtn.addEventListener('click', openBackupModal);
-    tagFilterBar.appendChild(backupBtn);
 }
+
+btnApplyFilters.addEventListener('click', () => {
+    updateActionBar();
+    renderCards(searchInput.value);
+    closeFilterModal();
+});
+
+btnClearFilters.addEventListener('click', () => {
+    activeFilterTagIds = [];
+    renderFilterTagSelector();
+});
+
+btnFilter.addEventListener('click', openFilterModal);
+btnCloseFilter.addEventListener('click', closeFilterModal);
+filterOverlay.addEventListener('click', e => {
+    if (e.target === filterOverlay) closeFilterModal();
+});
+
+btnOpenTags.addEventListener('click', openTagManager);
+btnOpenBackup.addEventListener('click', openBackupModal);
 
 // ═══════════════════════════════════════════════════════════════════════════
 // RENDER — Tag Selector (inside prompt modal)
@@ -463,8 +492,12 @@ function renderTagList() {
         item.querySelector('.btn-tag-delete').addEventListener('click', async () => {
             await deleteTag(tag.id);
             await refreshTags();
+            
+            // Remove from active filters if it was there
+            activeFilterTagIds = activeFilterTagIds.filter(id => id !== tag.id);
+            
             renderTagList();
-            renderTagFilterBar();
+            updateActionBar();
             renderCards(searchInput.value);
             showToast('Tag removida.', 'info');
         });
@@ -498,8 +531,9 @@ btnSaveTag.addEventListener('click', async () => {
     await refreshTags();
     renderColorPicker();
     renderTagList();
-    renderTagFilterBar();
+    updateActionBar();
     renderTagSelector();
+    renderCards(searchInput.value); // In case tag was renamed/updated in cards
 });
 
 btnCloseTagManager.addEventListener('click', closeTagManager);
@@ -555,6 +589,7 @@ document.addEventListener('keydown', e => {
         closeModal();
         closeTagManager();
         closeBackupModal();
+        closeFilterModal();
         confirmOverlay.classList.remove('visible');
     }
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && modal.classList.contains('visible')) {
@@ -611,7 +646,8 @@ async function handleImportBackup(e) {
             if (confirm('Atenção: Isso substituirá TODOS os seus dados atuais. Deseja continuar?')) {
                 await importAllData(data);
                 await refreshTags();
-                renderTagFilterBar();
+                activeFilterTagIds = [];
+                updateActionBar();
                 renderCards();
                 showToast('Dados restaurados com sucesso!');
                 closeBackupModal();
@@ -633,6 +669,6 @@ inputImportFile.addEventListener('change', handleImportBackup);
 // ─── Init ─────────────────────────────────────────────────────────────────
 (async function init() {
     await refreshTags();
-    renderTagFilterBar();
+    updateActionBar();
     renderCards();
 })();
