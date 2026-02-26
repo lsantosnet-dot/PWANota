@@ -13,13 +13,13 @@
 
   <title>PromptNota</title>
 
-  <link rel="manifest" href="/PWANota/manifest.json" />
-  <link rel="icon" href="/PWANota/icons/icon-192.png" sizes="192x192" />
-  <link rel="apple-touch-icon" href="/PWANota/icons/icon-192.png" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" href="./icons/icon-192.png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/PWANota/style.css" />
+  <link rel="stylesheet" href="./style.css" />
 </head>
 
 <body>
@@ -241,8 +241,7 @@
   </div>
 
   <!-- Backup Modal -->
-  <div class="modal-overlay" id="backup-overlay" role="dialog" aria-modal="true"
-    aria-labelledby="backup-title">
+  <div class="modal-overlay" id="backup-overlay" role="dialog" aria-modal="true" aria-labelledby="backup-title">
     <div class="modal-box tag-manager-box">
       <div class="modal-header">
         <h2 class="modal-title-text" id="backup-title">Backup e Dados</h2>
@@ -260,13 +259,17 @@
         <div class="backup-actions" style="margin-top: 0;">
           <button class="btn-ghost btn-sm" id="btn-export-backup" title="Baixar todos os dados">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
             </svg>
             Exportar JSON
           </button>
           <button class="btn-ghost btn-sm" id="btn-import-backup" title="Restaurar de um arquivo">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
             </svg>
             Importar JSON
           </button>
@@ -280,8 +283,8 @@
   <!-- Toast -->
   <div class="toast" id="toast" role="alert" aria-live="polite"></div>
 
-  <script src="/PWANota/db.js"></script>
-  <script src="/PWANota/app.js"></script>
+  <script src="./db.js"></script>
+  <script src="./app.js"></script>
 </body>
 
 </html>
