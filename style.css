@@ -350,8 +350,18 @@ body::after {
   color: var(--danger);
 }
 
+.btn-pin {
+  color: var(--text-muted);
+  opacity: 0.4;
+  transition: all var(--t);
+  padding: 4px;
+  margin-left: 8px;
+}
+
 .btn-pin:hover, .btn-pin.active {
   color: var(--warning);
+  opacity: 1;
+  transform: scale(1.1);
 }
 
 .btn-pin.active svg {
@@ -359,20 +369,12 @@ body::after {
 }
 
 .card.pinned {
-  border-color: rgba(251, 191, 36, 0.4);
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.05), var(--surface));
+  border-color: rgba(251, 191, 36, 0.3);
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.03), var(--surface));
 }
 
 .card.pinned::after {
-  content: 'FIXADO';
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  font-size: 0.6rem;
-  font-weight: 800;
-  color: var(--warning);
-  letter-spacing: 0.1em;
-  opacity: 0.8;
+  display: none; /* Removendo a etiqueta de texto para limpar a UI */
 }
 
 /* ── Empty State ─────────────────────────────────────────────── */

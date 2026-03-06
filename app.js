@@ -133,7 +133,18 @@ async function renderCards(filter = '') {
 
         card.innerHTML = `
       <div class="card-header">
-        ${p.title ? `<h3 class="card-title">${escapeHtml(p.title)}</h3>` : ''}
+        <div style="display: flex; align-items: flex-start; flex: 1; gap: 4px;">
+          ${p.title ? `<h3 class="card-title">${escapeHtml(p.title)}</h3>` : `<h3 class="card-title" style="font-style: italic; opacity: 0.5;">Sem título</h3>`}
+          <button class="btn-icon-xs btn-pin ${p.isPinned ? 'active' : ''}" title="${p.isPinned ? 'Desafixar' : 'Fixar no topo'}" aria-label="Fixar">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+               <path d="M12 2v8m0 0l-4 4h8l-4-4zm0 10v-6m0 0h-4l4-4 4 4h-4z" style="display:none;"/> <!-- placeholder para lógica se necessário -->
+               <path d="M15 4.5l-8 8.5M9 5l7 7M6 10l3 3M14 2l3 3M11 7l3 3M4 15l2 2" stroke-linecap="round"/>
+               <path d="M7 11l-3 3 6 6 3-3"/>
+               <line x1="16" y1="2" x2="11" y2="7" />
+               <line x1="15" y1="18" x2="21" y2="21" />
+            </svg>
+          </button>
+        </div>
         <span class="card-date">${formatDate(p.createdAt)}</span>
       </div>
       ${tagPillsHtml}
@@ -141,11 +152,6 @@ async function renderCards(filter = '') {
       <div class="card-actions">
         <button class="btn-icon btn-play" title="Enviar para o Gemini" aria-label="Enviar para Gemini">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-        <button class="btn-icon btn-pin ${p.isPinned ? 'active' : ''}" title="${p.isPinned ? 'Desafixar' : 'Fixar no topo'}" aria-label="Fixar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-             <path d="M21 10V8l-2-2h-3L13 2 11 4v4l-4 4-2-2v4l2 2v3l2 2h4l2-2v-3l2-2z"/>
-          </svg>
         </button>
         <button class="btn-icon btn-copy" title="Copiar texto" aria-label="Copiar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -169,6 +175,7 @@ async function renderCards(filter = '') {
 
         card.querySelector('.btn-play').addEventListener('click', () => sharePrompt(p));
         card.querySelector('.btn-pin').addEventListener('click', async (e) => {
+            e.stopPropagation(); // Evitar comportamentos indesejados no header
             const btn = e.currentTarget;
             btn.classList.add('shake');
             await togglePromptPin(p.id);
