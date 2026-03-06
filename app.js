@@ -1,5 +1,6 @@
 /* ===========================
    PWA Prompt Manager - app.js
+   Version: 1.1.0-pin-update
    =========================== */
 
 // Register Service Worker
