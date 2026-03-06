@@ -99,6 +99,14 @@ async function renderCards(filter = '') {
         );
     }
 
+    // Sort by Pin (Pinned first) then by createdAt (Recent first)
+    filtered.sort((a, b) => {
+        if (a.isPinned !== b.isPinned) {
+            return b.isPinned ? 1 : -1;
+        }
+        return (b.createdAt || 0) - (a.createdAt || 0);
+    });
+
     cardGrid.innerHTML = '';
 
     if (filtered.length === 0) {
@@ -109,7 +117,7 @@ async function renderCards(filter = '') {
 
     filtered.forEach(p => {
         const card = document.createElement('div');
-        card.className = 'card animate-in';
+        card.className = `card animate-in ${p.isPinned ? 'pinned' : ''}`;
         card.dataset.id = p.id;
 
         // Build tag pills HTML
@@ -134,6 +142,11 @@ async function renderCards(filter = '') {
         <button class="btn-icon btn-play" title="Enviar para o Gemini" aria-label="Enviar para Gemini">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
         </button>
+        <button class="btn-icon btn-pin ${p.isPinned ? 'active' : ''}" title="${p.isPinned ? 'Desafixar' : 'Fixar no topo'}" aria-label="Fixar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <path d="M21 10V8l-2-2h-3L13 2 11 4v4l-4 4-2-2v4l2 2v3l2 2h4l2-2v-3l2-2z"/>
+          </svg>
+        </button>
         <button class="btn-icon btn-copy" title="Copiar texto" aria-label="Copiar">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
@@ -154,8 +167,13 @@ async function renderCards(filter = '') {
       </div>
     `;
 
-        // Tags are NOT sent — only the prompt text
         card.querySelector('.btn-play').addEventListener('click', () => sharePrompt(p));
+        card.querySelector('.btn-pin').addEventListener('click', async (e) => {
+            const btn = e.currentTarget;
+            btn.classList.add('shake');
+            await togglePromptPin(p.id);
+            renderCards(searchInput.value);
+        });
         card.querySelector('.btn-copy').addEventListener('click', () => copyPrompt(p));
         card.querySelector('.btn-edit').addEventListener('click', () => openEditModal(p));
         card.querySelector('.btn-delete').addEventListener('click', () => confirmDelete(p.id));

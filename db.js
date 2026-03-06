@@ -1,5 +1,5 @@
 const DB_NAME = 'promptnota-db';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 const STORE_PROMPTS = 'prompts';
 const STORE_TAGS = 'tags';
 
@@ -55,7 +55,13 @@ async function addPrompt(title, text, tags = []) {
     const db = await openDB();
     return new Promise((resolve, reject) => {
         const tx = db.transaction(STORE_PROMPTS, 'readwrite');
-        const req = tx.objectStore(STORE_PROMPTS).add({ title, text, tags, createdAt: Date.now() });
+        const req = tx.objectStore(STORE_PROMPTS).add({ 
+            title, 
+            text, 
+            tags, 
+            isPinned: false,
+            createdAt: Date.now() 
+        });
         req.onsuccess = e => resolve(e.target.result);
         req.onerror = e => reject(e.target.error);
     });
@@ -89,6 +95,24 @@ async function deletePrompt(id) {
         const req = tx.objectStore(STORE_PROMPTS).delete(id);
         req.onsuccess = () => resolve();
         req.onerror = e => reject(e.target.error);
+    });
+}
+
+async function togglePromptPin(id) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(STORE_PROMPTS, 'readwrite');
+        const store = tx.objectStore(STORE_PROMPTS);
+        const getReq = store.get(id);
+        getReq.onsuccess = e => {
+            const item = e.target.result;
+            if (!item) { reject(new Error('Not found')); return; }
+            item.isPinned = !item.isPinned;
+            const putReq = store.put(item);
+            putReq.onsuccess = () => resolve(item.isPinned);
+            putReq.onerror = err => reject(err);
+        };
+        getReq.onerror = e => reject(e.target.error);
     });
 }
 
